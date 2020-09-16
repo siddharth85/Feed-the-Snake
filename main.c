@@ -22,6 +22,51 @@
 static int lt=0; static int rt=0; static int up=0; static int dn=0;
 static int j,j1,j2,j3;
 static int ex=0;
+ static int zd[100];
+static int zc[100];
+static int zr[100];
+ static int zl[100];
+static int zx=0;
+static int zy=0;
+static int za=1;
+static int new=0;
+static int f9,f8,f7,f6;
+static int length_snake=4;
+static int fx=0;
+void food(){
+	
+	if(new==0){
+		
+			f9=rand()%8;
+			f8=rand()%8;
+			f7=(int)(pow(2,f9)+0.5);
+			f6=(int)(pow(2,f8)+0.5);
+			if(bit_is_clear(PINB,f9)&& bit_is_set(PIND,f8)){
+				PORTB =f7;
+				PORTD = ~f6;
+				new=1;
+			return 0;
+			}
+			else{
+				food();
+			}
+		
+	}
+
+	
+	
+	_delay_ms(90);
+	
+	
+}
+
+
+
+
+
+
+
+
 
 
 void dirr (int l,int r1,int r2 )	{
@@ -40,8 +85,13 @@ void dirr (int l,int r1,int r2 )	{
 		}
 	}
 	PORTD  &= ~(m);
+	if(PORTB==f7 && f8==j){
+		new=0;
+		food();
+		fx=1;
+	}
 
-	_delay_ms(90);
+	_delay_ms(35);
 	
 }
 
@@ -63,8 +113,13 @@ void dirl (int l,int r1,int r2 )	{
 		}
 	}
 	PORTD  &= ~(m);
+	if(PORTB==f7 && f8==j1){
+		new=0;
+		food();
+		fx=1;
+	}
 
-	_delay_ms(10);
+	_delay_ms(35);
 	
 }
 
@@ -87,8 +142,15 @@ void dird(int l,int c1,int c2){
 			j2=0;
 		}
 	}
+	
 	PORTB |= m1;
-	_delay_ms(90);
+	if(PORTD== ~f6 && j2==f9){
+		new=0;
+		food();
+		fx=0;
+	}
+	
+	_delay_ms(35);
 	
 }
 
@@ -109,7 +171,15 @@ void diru(int l,int c1,int c2){
 		}
 	}
 	PORTB |= m1;
-	_delay_ms(100);
+	if(PORTD== ~f6 && j3==f9){
+		new=0;
+		food();
+		fx=0;
+	}
+	
+	
+	
+	_delay_ms(35);
 }
 
 void cond(){
@@ -154,56 +224,50 @@ int main(void)
 	int v=0;
 	int h2=0;
 	int v1=7;
-	int length_snake=4;
+	
 	int l1,l2,l3,l4;
 	l3=l4=l1=l2=1;
 	 int column;
 	int row;
+	
 	while (1)
 	{
-		cond();
+		
 		if(bit_is_clear(PINA,1)){
 			
 			if(ex==0){
-			
+			   zd[zx]=3;
+			 
+			   
 				 row =3;
 			
 			l1=length_snake;
+			  zl[zx]=l1;
 			if(ex==0){
-				dirr (length_snake,row,h );
+				dirr (l1,row,h );
 		
 				h--;
 				
 				if(h<0){
 					h=7;
 				}
+				zc[zx]=h;
+				zr[zx]=row;
+				
+				_delay_ms(500);
 			}
 			}
-			
 		
 		
-		if(rt==1 && ex!=0 ){
+		cond();	
+		food();
+
+		if(rt==1 && ex!=0  ){
 		
-			if(l2>1){
-				l2--;
-				dird(l2,column,v);
-				v++;
-				if(v>7){
-					v=0;
-				}
-				
-			}
-			if(l4>1){
-				l4--;
-				diru(l4,column,v1);
-				v1--;
-				if(v1<0){
-					v1=7;
-				}
-				
-				
-				}
+		
 			if(l1==1 && l2>1){
+				l2=1;
+				zx++;
 				row=j2;
 				if(row<=0){
 					row=8;
@@ -211,6 +275,8 @@ int main(void)
 				h=7-column;
 			}
 			if(l1==1 && l4>1){
+				l4=1;
+				zx++;
 				h=7-column;
 				row=j3+2;
 				if(row>8){
@@ -228,53 +294,36 @@ int main(void)
 						if(h<0){
 							h=7;
 						}
-		
-		/*	PORTD = 0b11111111;
-			dirr (l1,row,h );
-			if(l1==length_snake){
-				h--;
-			}
-			if(h<0){
-				h=7;
-			}*/
-			
+						
+			_delay_ms(500);
+	               zd[zx]=3;
+	               zl[zx]=l1;
+	               zc[zx]=h;
+	               zr[zx]=row;
+				   
+				   if(fx==1){
+					   fx=0;
+					   length_snake++;
+					   zl[zy]++;
+				   }
+				 
+				
 		}
 		
 		
 		cond();
+	if(new==1){
+		PORTB =f7;
+		PORTD = ~f6;
+		_delay_ms(20);
+	}
 		
-		if(dn==1){
-			if(l1>1){
-				l1--;
-				// row=3;
-				
-				
-				dirr (l1,row,h );
-				h--;
-				if(h<0){
-					h=7;
-				}
-				
-			}
-			
-			
-			//
-			
-			if(l3>1){
-				l3--;
-		// row =3;
-				dirl (l3,row,h2 );
-				h2++;
-				if(h2>7){
-					h2=0;
-				}
-				
-			}
-			
-			
+		if(dn==1 ){
+		
 			
 			if(l2==1 && l1>1){
-           
+				l1=1;
+                  zx++;
 		       v=row-1;
 				column=7-j-1;
 				if(column < 0){
@@ -285,6 +334,8 @@ int main(void)
 		   
 		  
 			if(l2==1 && l3>1){
+				l3=1;
+				zx++;
 				v=row-1;
 				column=7-j1+1;
 				if(column >7){
@@ -308,40 +359,33 @@ int main(void)
 			if(v>7){
 				v=0;
 			}
-			
-			
-			
-			
+				_delay_ms(500);
+			  zd[zx]=2;
+			  zl[zx]=l2;
+			zc[zx]=v;
+			zr[zx]=column; 
+			  if(fx==1){
+				  fx=0;
+				  length_snake++;
+				  zl[zy]++;
+			  }
 			
 		}
 		
 		
-
 		
-		cond();
-		
+			cond();
+		if(new==1){
+			PORTB =f7;
+			PORTD = ~f6;
+			_delay_ms(20);
+		}	
+	
 		if(lt==1){
-			if(l4>1){
-				l4--;
-				diru(l4,column,v1);
-				v1--;
-				if(v1<0){
-					v1=7;
-				}
-				
-				
-			}
 			
-			if(l2>1){
-				l2--;
-				dird(l2,column,v);
-				v++;
-				if(v>7){
-					v=0;
-				}
-				
-			}
 				if(l3==1 && l4>1){
+					l4=1;
+					zx++;
 					h2=7-column;
 					row=(j3+2);
 					if(row>8){
@@ -349,6 +393,8 @@ int main(void)
 					}
 				}
 				if(l3==1 && l2>1){
+					l2=1;
+					zx++;
 					row=j2;
 					if(row<=0){
 						row=8;
@@ -366,78 +412,38 @@ int main(void)
 				if(h2>7){
 					h2=0;
 				}
-			
-			
-			/*
-			int row =1;
-			if(l3!=length_snake){
-				l3++;
-			}
-			
-			dirl (l3,row,h2 );
-			if(l3==length_snake){
-				h2++;
-			}
-			if(h2>7){
-				h2=0;
-			}*/
+				
+				
+					_delay_ms(500);
+			  zd[zx]=4;
+			  zl[zx]=l3;
+			  zc[zx]=h2;
+			  zr[zx]=row;
+			   if(fx==1){
+				   fx=0;
+				   length_snake++;
+				   zl[zy]++;
+			   }
+	
 			
 		}
 		
 		
+			cond();
+			if(new==1){
+				PORTB =f7;
+				PORTD = ~f6;
+				_delay_ms(20);
+			}
 		
-		cond();
 		
-		
-		
-		
-		
-		
-
-
-
-		
-
-
-
-
 		if(up==1){
 			
-		/*	int column=1;
-			if(l4!=length_snake){
-				l4++;
-			}
-			diru(l4,column,v1);
-			if(l4==length_snake){
-				v1--;
-			}
-			if(v1<0){
-				v1=7;
-			}*/
-		if(l1>1){
-			l1--;
-		//	row=3;
-			
-			
-			dirr (l1,row,h );
-			h--;
-			if(h<0){
-				h=7;
-			}
-			
-		}
-		if(l3>1){
-			l3--;
-			// row =3;
-			dirl (l3,row,h2 );
-			h2++;
-			if(h2>7){
-				h2=0;
-			}
-			
-		}
+		
+	
 		if(l4==1 && l1>1){
-			
+			l1=1;
+			zx++;
 			v1=row-1;
 			column=7-j-1;
 			if(column < 0){
@@ -447,6 +453,8 @@ int main(void)
 		}
 		
 		if(l4==1 && l3>1){
+			l3=1;
+			zx++;
 			v1=row-1;
 			column=7-j1+1;
 			if(column >7){
@@ -454,23 +462,148 @@ int main(void)
 			}
 			
 		}
-		
 		if(l4!=length_snake){
-			l4++;
+		l4++;
+	}
+	diru(l4,column,v1);
+	if(l4==length_snake){
+		v1--;
+	}
+	if(v1<0){
+		v1=7;
+	}
+		_delay_ms(500);
+	  zd[zx]=1;
+	  zl[zx]=l4;
+	  zc[zx]=v1;
+	  zr[zx]=column;
+	   if(fx==1){
+		   fx=0;
+		   length_snake++;
+		   zl[zy]++;
+	   }
+	   
+
+	 
+	
+}
+		
+		
+		
+		
+		
+		
+		
+		
+		if(new==1){
+			PORTB =f7;
+			PORTD = ~f6;
+			_delay_ms(20);
 		}
-		diru(l4,column,v1);
-		if(l4==length_snake){
-			v1--;
-		}
-		if(v1<0){
-			v1=7;
-			}
 		
 		
 		
+		
+           	cond();
+		
+		
+		
+		
+				if( zy<zx){
+					
+					
+					
+					
+					
+					if(zd[zy]==3 && zl[zy]>1){
+					
+					zl[zy]--;
+					
+					dirr (zl[zy],zr[zy],zc[zy]);
+					zc[zy]--;
+					if(zc[zy]<0){
+						zc[zy]=7;
+					}
+						
+						
+				}
+				if(zd[zy]==4 && zl[zy]>1){
+					
+					zl[zy]--;
+					
+					dirl (zl[zy],zr[zy],zc[zy] );
+					zc[zy]++;
+					if(zc[zy]>7){
+						zc[zy]=0;
+					}
+					
+						
+				}
+				if(zd[zy]==1 && zl[zy]>1){
+					
+					zl[zy]--;
+					
+					diru (zl[zy],zr[zy],zc[zy] );
+					zc[zy]--;
+					if(zc[zy]<0){
+						zc[zy]=7;
+					}
+					
+						
+				}
+				if(zd[zy]==2 && zl[zy]>1){
+					
+					zl[zy]--;
+					
+					dird (zl[zy],zr[zy],zc[zy] );
+					zc[zy]++;
+					if(zc[zy]>7){
+						zc[zy]=0;
+					}
+						
+						
+				}
+				_delay_ms(500);
+				if(zl[zy]==1){
+					
+					zy++;
+				}
+				for(int kl=(zy+1);kl<zx;kl++){
+					if(zd[kl]==1 && zl[kl]>1){
+						diru (zl[kl],zr[kl],zc[kl] );
+					}
+					if(zd[kl]==2 && zl[kl]>1){
+						dird (zl[kl],zr[kl],zc[kl] );
+					}
+					if(zd[kl]==3 && zl[kl]>1){
+						dirr (zl[kl],zr[kl],zc[kl] );
+					}
+					if(zd[kl]==4 && zl[kl]>1){
+						dirl (zl[kl],zr[kl],zc[kl] );
+					}
+				}
+			
+				}
+				
+						
+				
+				
+			
+	
+				
+		
+	
 			
 			
-		}
+			
+			
+			
+			
+			
+		
+				
+			
+		
 		
 		
 
